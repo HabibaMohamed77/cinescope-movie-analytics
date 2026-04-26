@@ -25,12 +25,8 @@ CineScope/
 │   └── Movies1.xlsx             # Power Query + Power Pivot workbook
 │
 ├── powerbi/
-│   └── Movie.pbix               # Final Power BI dashboard file
-│
-├── theme/
-│   └── CineScope_EarthTone_Theme.json   # Custom Power BI theme
-│
-└── README.md
+   └── Movie.pbix               # Final Power BI dashboard file
+
 ```
 
 ---
@@ -44,7 +40,7 @@ CineScope/
 | Remove nulls | Filtered rows where `imdb_score` is null |
 | Remove duplicates | Checked for duplicate `movie_title` + `title_year` combinations |
 | Budget Tier column | Conditional column: `< 10K votes = Indie`, `10K–100K = Mid`, `100K+ = Blockbuster` |
-| Trim titles | Stripped trailing whitespace from `movie_title` |
+
 
 ---
 
@@ -53,17 +49,13 @@ CineScope/
 ### Measures
 
 ```dax
-Total Movies = COUNTROWS(movie_data)
+Total Movies:=COUNTROWS(movie_data)
 
-Avg IMDB Score = AVERAGE(movie_data[imdb_score])
+Avg IMDB Score:=AVERAGE([imdb_score])
 
-User Engagement = SUM(movie_data[num_voted_users]) / [Total Movies]
+User Engagement:=SUM(movie_data[num_voted_users])/[Total Movies]
 
-Top Director =
-CONCATENATEX(
-  TOPN(1, VALUES(movie_data[director_name]), [Total Movies], DESC),
-  movie_data[director_name]
-)
+Top Director:=TOPN(1,VALUES(movie_data[director_name]),[Total Movies])
 
 % of Total Movies =
 DIVIDE(
@@ -75,21 +67,13 @@ DIVIDE(
 ### Calculated Columns
 
 ```dax
-Decade = LEFT(TEXT([title_year], "0000"), 3) & "0s"
 
-Score Band =
-IF([imdb_score] >= 8, "Excellent",
-  IF([imdb_score] >= 7, "Good",
-    IF([imdb_score] >= 5, "Average", "Poor")))
+Score rating band=IF([imdb_score]<5,"Poor",IF([imdb_score]<7,"Average",IF([imdb_score]<8,"Good","Excellent")))
 
-Budget Tier =
-IF([num_voted_users] < 10000, "Indie",
-  IF([num_voted_users] < 100000, "Mid", "Blockbuster"))
+
 ```
 
-### Date Dimension Table
 
-A separate `DimYear` table (1916–2016) was created and linked to `movie_data[title_year]` to enable proper time-based filtering and DAX time intelligence functions.
 
 ---
 
@@ -106,13 +90,6 @@ A separate `DimYear` table (1916–2016) was created and linked to `movie_data[t
 | Country map | Bubble Map | country → Total Movies (size), Avg IMDB Score (color) |
 | Slicers | Slicer (Dropdown) | Decade, Genre, Language |
 
----
-
-## 🎨 Theme
-
-Custom Earth Tone theme applied — warm beige background, terracotta accents, forest green secondary color. Theme JSON file included in `/theme/` folder.
-
-To apply: **View → Themes → Browse for themes** → select `CineScope_EarthTone_Theme.json`
 
 ---
 
@@ -143,14 +120,13 @@ To apply: **View → Themes → Browse for themes** → select `CineScope_EarthT
 - DAX (measures, calculated columns, TOPN, DIVIDE, ALL, CONCATENATEX)
 - Data modeling (star schema, dimension tables, relationships)
 - Power BI (dashboard design, conditional formatting, Top N filters, map visuals)
-- Custom theme design (JSON theme file)
 
 ---
 
 ## 📸 Dashboard Preview
 
-> *(Add a screenshot of your final dashboard here)*  
-> In Power BI: File → Export → Export to PDF or take a screenshot and save as `dashboard_preview.png`
+<img width="1365" height="679" alt="image" src="https://github.com/user-attachments/assets/e492c503-b94f-4d93-92ae-0f4316f6ff17" />
+
 
 ---
 
